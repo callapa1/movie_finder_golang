@@ -5,9 +5,8 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"strconv"
 
-	// h_input "github.com/callapa1/movies_api/helpers/input"
-	// main "github.com/callapa1/movies_api"
 	h_print "github.com/callapa1/movies_api/helpers/print"
 	structs "github.com/callapa1/movies_api/structs"
 )
@@ -20,7 +19,6 @@ func Ready() []byte {
 		fmt.Println(err)
 	} else {
 		fmt.Println("(Successfully opened movies.json)")
-		fmt.Println()
 	}
 	defer jsonFile.Close()
 
@@ -54,4 +52,52 @@ func Fetch_all() {
 			fmt.Println("-(Actors info not found)")
 		}
 	}
+}
+
+func Fetch_by_id(id string) {
+	byteValue := Ready()
+
+	var movies structs.Movies
+	json.Unmarshal(byteValue, &movies)
+
+	var movie structs.Movie
+
+	for i := 0; i < len(movies.Movies); i++ {
+		if strconv.Itoa(int(movies.Movies[i].Id)) == id {
+			movie = movies.Movies[i]
+			break
+		}
+	}
+
+	if movie.Title == "" {
+		fmt.Println("No movie matches the ID!")
+	} else {
+		h_print.Print_id(movie.Id)
+		h_print.Print_title(movie.Title)
+		h_print.Print_poster(movie.Poster)
+		h_print.Print_description(movie.Description)
+		h_print.Print_year(movie.Year)
+
+		if len(movie.Actors) > 0 {
+			fmt.Println("-Actors: ")
+			for _, actor := range movie.Actors {
+				h_print.Print_actor(actor.Name)
+			}
+		} else {
+			fmt.Println("-(Actors info not found)")
+		}
+	}
+
+}
+
+func Keywords(input string) {
+	fmt.Println("Type keywords below")
+	fmt.Print("\n>")
+	var keywords string
+
+	fmt.Scan(&keywords)
+
+	fmt.Println(keywords)
+
+	// ENCONTRAR COMO SEPARAR VARIAS PALABRAS
 }
