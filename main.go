@@ -5,44 +5,69 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"strconv"
 
 	help "github.com/callapa1/movies_api/helpers"
 	"github.com/callapa1/movies_api/structs"
 )
 
 func main() {
+	// UI
+	fmt.Println("## Welcome to The Movie API ##")
 
-	// Open our jsonFile
+	input := input_loop()
+
+	if input == "/ALL" {
+		fetch_all()
+	} else if is_number(input) {
+		fmt.Println("string")
+	}
+
+}
+
+func input_loop() string {
+	var input string
+
+	for {
+		fmt.Println("-Type:")
+		fmt.Println("  /ALL -> to fetch all movies")
+		fmt.Println("  [number] -> to fetch movie by ID")
+		fmt.Println("  [keywords] -> any words included in a title")
+
+		fmt.Print(">")
+		fmt.Scanln(&input)
+		if len(input) > 0 {
+			break
+		}
+	}
+	return input
+}
+
+func ready() []byte {
+	// Open jsonFile, handle error and read
 	jsonFile, err := os.Open("movies.json")
-	// if we os.Open returns an error then handle it
+
 	if err != nil {
 		fmt.Println(err)
 	} else {
 		fmt.Println("(Successfully opened movies.json)")
 		fmt.Println()
 	}
-	// defer the closing of our jsonFile so that we can parse it later on
 	defer jsonFile.Close()
-	// read our opened xmlFile as a byte array.
+
 	byteValue, _ := ioutil.ReadAll(jsonFile)
+	return byteValue
+}
 
-	fmt.Println("## Welcome to The Movie API ##")
-	fmt.Println("-Type:")
-	fmt.Println("  ALL -> to fetch all movies")
-	fmt.Println("  [ID] -> any number to fetch movie by ID")
-	fmt.Println("  [keywords] -> any words included in a title")
-	var answer string
-	fmt.Scanln(&answer)
-
-	// Movies array initialized
-	var movies structs.Movies
-
+func fetch_all() {
+	byteValue := ready()
 	// We unmarshal our byteArray which contains our
-	// jsonFile's content into 'movies' which we defined above
+	// jsonFile's content into 'movies' which we define in /structs
+	var movies structs.Movies
 	json.Unmarshal(byteValue, &movies)
 
-	// we iterate through every movie within our movies array and
-	// print out the movie ID, title, poster, description, year, actors
+	// We iterate through every movie within our movies
+	// array and print out their details
 	for i := 0; i < len(movies.Movies); i++ {
 
 		help.Print_id(movies.Movies[i].Id)
@@ -59,5 +84,13 @@ func main() {
 		} else {
 			fmt.Println("-(Actors info not found)")
 		}
+	}
+}
+
+func is_number(value string) bool {
+	if _, err := strconv.Atoi(value); err == nil {
+		return true
+	} else {
+		return false
 	}
 }
