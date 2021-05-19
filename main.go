@@ -18,6 +18,6 @@ func main() {
 	} else if h_input.Is_number(input) {
 		process.Fetch_by_id(input)
 	} else if strings.ToLower(input) == "words" {
-		process.Keywords(input)
+		process.Keywords()
 	}
 }

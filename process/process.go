@@ -6,7 +6,9 @@ import (
 	"io/ioutil"
 	"os"
 	"strconv"
+	"strings"
 
+	h_input "github.com/callapa1/movies_api/helpers/input"
 	h_print "github.com/callapa1/movies_api/helpers/print"
 	structs "github.com/callapa1/movies_api/structs"
 )
@@ -27,10 +29,10 @@ func Ready() []byte {
 }
 
 func Fetch_all() {
+	var movies structs.Movies
 	byteValue := Ready()
 	// We unmarshal our byteArray which contains our
 	// jsonFile's content into 'movies' which we define in /structs
-	var movies structs.Movies
 	json.Unmarshal(byteValue, &movies)
 
 	// We iterate through every movie within our movies
@@ -55,12 +57,10 @@ func Fetch_all() {
 }
 
 func Fetch_by_id(id string) {
-	byteValue := Ready()
-
 	var movies structs.Movies
-	json.Unmarshal(byteValue, &movies)
-
 	var movie structs.Movie
+	byteValue := Ready()
+	json.Unmarshal(byteValue, &movies)
 
 	for i := 0; i < len(movies.Movies); i++ {
 		if strconv.Itoa(int(movies.Movies[i].Id)) == id {
@@ -90,14 +90,30 @@ func Fetch_by_id(id string) {
 
 }
 
-func Keywords(input string) {
-	fmt.Println("Type keywords below")
-	fmt.Print("\n>")
-	var keywords string
+func Keywords() {
+	var movies structs.Movies
+	var movie structs.Movie
+	byteValue := Ready()
+	json.Unmarshal(byteValue, &movies)
 
-	fmt.Scan(&keywords)
+	fmt.Println()
+	fmt.Println("Type one word per line (5 max)")
+	fmt.Println()
 
-	fmt.Println(keywords)
+	input := h_input.Keywords_loop()
 
-	// ENCONTRAR COMO SEPARAR VARIAS PALABRAS
+	for _, v := range input {
+		for i := 0; i < len(movies.Movies); i++ {
+			if strings.Contains(movies.Movies[i].Title, v) {
+				movie = movies.Movies[i]
+				break
+			}
+		}
+
+		if len(movie.Title) > 0 {
+			break
+		}
+	}
+
+	h_print.Print_title(movie.Title)
 }

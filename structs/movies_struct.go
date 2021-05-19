@@ -17,6 +17,10 @@ type Movie struct {
 	Actors      []Actor `json:"actors"`
 }
 
+func (m Movie) Print_movie() {
+
+}
+
 // Actor struct which contains a name
 type Actor struct {
 	Name string `json:"name"`

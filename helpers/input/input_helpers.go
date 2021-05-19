@@ -24,6 +24,19 @@ func Input_loop() string {
 	return input
 }
 
+func Keywords_loop() [5]string {
+	var array [5]string
+
+	for i, _ := range array {
+		fmt.Print(">")
+		fmt.Scanln(&array[i])
+		if len(array[i]) == 0 {
+			break
+		}
+	}
+	return array
+}
+
 func Is_number(value string) bool {
 	if _, err := strconv.Atoi(value); err == nil {
 		return true
